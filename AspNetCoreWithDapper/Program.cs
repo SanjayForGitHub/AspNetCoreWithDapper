@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace AspNetCoreWithDapper
+namespace Dapper.Web
 {
     public class Program
     {
@@ -16,7 +16,6 @@ namespace AspNetCoreWithDapper
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseApplicationInsights()
                 .Build();
 
             host.Run();

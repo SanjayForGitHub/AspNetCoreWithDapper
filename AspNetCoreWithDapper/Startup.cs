@@ -7,8 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Dapper.Infrastructure;
+using Dapper.Domain;
 
-namespace AspNetCoreWithDapper
+namespace Dapper.Web
 {
     public class Startup
     {
@@ -28,7 +31,12 @@ namespace AspNetCoreWithDapper
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddDbContext<EFDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DapperDbConnectingString")));
             services.AddMvc();
+
+            services.AddScoped<IRepository,DapperRepositoryOld<EFDbContext>>();
+            services.AddSingleton(_ => Configuration);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +61,7 @@ namespace AspNetCoreWithDapper
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Contacts}/{action=Index}/{id?}");
             });
         }
     }

@@ -732,10 +732,10 @@ try {
 
 function Sizzle( selector, context, results, seed ) {
 	var m, i, elem, nid, nidselect, match, groups, newSelector,
-		newContext = context && context.ownerDocument,
+		newContext = context && _dbContext.ownerDocument,
 
 		// nodeType defaults to 9, since context defaults to document
-		nodeType = context ? context.nodeType : 9;
+		nodeType = context ? _dbContext.nodeType : 9;
 
 	results = results || [];
 
@@ -749,7 +749,7 @@ function Sizzle( selector, context, results, seed ) {
 	// Try to shortcut find operations (as opposed to filters) in HTML documents
 	if ( !seed ) {
 
-		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+		if ( ( context ? _dbContext.ownerDocument || context : preferredDoc ) !== document ) {
 			setDocument( context );
 		}
 		context = context || document;
@@ -765,7 +765,7 @@ function Sizzle( selector, context, results, seed ) {
 
 					// Document context
 					if ( nodeType === 9 ) {
-						if ( (elem = context.getElementById( m )) ) {
+						if ( (elem = _dbContext.getElementById( m )) ) {
 
 							// Support: IE, Opera, Webkit
 							// TODO: identify versions
@@ -784,7 +784,7 @@ function Sizzle( selector, context, results, seed ) {
 						// Support: IE, Opera, Webkit
 						// TODO: identify versions
 						// getElementById can match elements by name instead of ID
-						if ( newContext && (elem = newContext.getElementById( m )) &&
+						if ( newContext && (elem = new_dbContext.getElementById( m )) &&
 							contains( context, elem ) &&
 							elem.id === m ) {
 
@@ -795,14 +795,14 @@ function Sizzle( selector, context, results, seed ) {
 
 				// Type selector
 				} else if ( match[2] ) {
-					push.apply( results, context.getElementsByTagName( selector ) );
+					push.apply( results, _dbContext.getElementsByTagName( selector ) );
 					return results;
 
 				// Class selector
 				} else if ( (m = match[3]) && support.getElementsByClassName &&
-					context.getElementsByClassName ) {
+					_dbContext.getElementsByClassName ) {
 
-					push.apply( results, context.getElementsByClassName( m ) );
+					push.apply( results, _dbContext.getElementsByClassName( m ) );
 					return results;
 				}
 			}
@@ -820,13 +820,13 @@ function Sizzle( selector, context, results, seed ) {
 				// Thanks to Andrew Dupont for this workaround technique
 				// Support: IE <=8
 				// Exclude object elements
-				} else if ( context.nodeName.toLowerCase() !== "object" ) {
+				} else if ( _dbContext.nodeName.toLowerCase() !== "object" ) {
 
 					// Capture the context ID, setting it first if necessary
-					if ( (nid = context.getAttribute( "id" )) ) {
+					if ( (nid = _dbContext.getAttribute( "id" )) ) {
 						nid = nid.replace( rescape, "\\$&" );
 					} else {
-						context.setAttribute( "id", (nid = expando) );
+						_dbContext.setAttribute( "id", (nid = expando) );
 					}
 
 					// Prefix every selector in the list
@@ -839,20 +839,20 @@ function Sizzle( selector, context, results, seed ) {
 					newSelector = groups.join( "," );
 
 					// Expand context for sibling selectors
-					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+					newContext = rsibling.test( selector ) && testContext( _dbContext.parentNode ) ||
 						context;
 				}
 
 				if ( newSelector ) {
 					try {
 						push.apply( results,
-							newContext.querySelectorAll( newSelector )
+							new_dbContext.querySelectorAll( newSelector )
 						);
 						return results;
 					} catch ( qsaError ) {
 					} finally {
 						if ( nid === expando ) {
-							context.removeAttribute( "id" );
+							_dbContext.removeAttribute( "id" );
 						}
 					}
 				}
@@ -1007,7 +1007,7 @@ function createPositionalPseudo( fn ) {
  * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
  */
 function testContext( context ) {
-	return context && typeof context.getElementsByTagName !== "undefined" && context;
+	return context && typeof _dbContext.getElementsByTagName !== "undefined" && context;
 }
 
 // Expose support vars for convenience
@@ -1092,8 +1092,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// ID find and filter
 	if ( support.getById ) {
 		Expr.find["ID"] = function( id, context ) {
-			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
-				var m = context.getElementById( id );
+			if ( typeof _dbContext.getElementById !== "undefined" && documentIsHTML ) {
+				var m = _dbContext.getElementById( id );
 				return m ? [ m ] : [];
 			}
 		};
@@ -1121,12 +1121,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Tag
 	Expr.find["TAG"] = support.getElementsByTagName ?
 		function( tag, context ) {
-			if ( typeof context.getElementsByTagName !== "undefined" ) {
-				return context.getElementsByTagName( tag );
+			if ( typeof _dbContext.getElementsByTagName !== "undefined" ) {
+				return _dbContext.getElementsByTagName( tag );
 
 			// DocumentFragment nodes don't have gEBTN
 			} else if ( support.qsa ) {
-				return context.querySelectorAll( tag );
+				return _dbContext.querySelectorAll( tag );
 			}
 		} :
 
@@ -1135,7 +1135,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				tmp = [],
 				i = 0,
 				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
-				results = context.getElementsByTagName( tag );
+				results = _dbContext.getElementsByTagName( tag );
 
 			// Filter out possible comments
 			if ( tag === "*" ) {
@@ -1152,8 +1152,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Class
 	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
-		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
-			return context.getElementsByClassName( className );
+		if ( typeof _dbContext.getElementsByClassName !== "undefined" && documentIsHTML ) {
+			return _dbContext.getElementsByClassName( className );
 		}
 	};
 
@@ -1432,7 +1432,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
-	if ( ( context.ownerDocument || context ) !== document ) {
+	if ( ( _dbContext.ownerDocument || context ) !== document ) {
 		setDocument( context );
 	}
 	return contains( context, elem );
@@ -2248,7 +2248,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 			preexisting = results.length,
 
 			// Get initial elements from seed or context
-			elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+			elems = seed || multipleContexts( selector || "*", _dbContext.nodeType ? [ context ] : context, [] ),
 
 			// Prefilter to get matcher input, preserving a map for seed-results synchronization
 			matcherIn = preFilter && ( seed || !selector ) ?
@@ -2549,7 +2549,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		// Reduce context if the leading compound selector is an ID
 		tokens = match[0] = match[0].slice( 0 );
 		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-				support.getById && context.nodeType === 9 && documentIsHTML &&
+				support.getById && _dbContext.nodeType === 9 && documentIsHTML &&
 				Expr.relative[ tokens[1].type ] ) {
 
 			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
@@ -2558,7 +2558,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 
 			// Precompiled matchers will still verify ancestry, so step up a level
 			} else if ( compiled ) {
-				context = context.parentNode;
+				context = _dbContext.parentNode;
 			}
 
 			selector = selector.slice( tokens.shift().value.length );
@@ -2577,7 +2577,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 				// Search, expanding context for leading sibling combinators
 				if ( (seed = find(
 					token.matches[0].replace( runescape, funescape ),
-					rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
+					rsibling.test( tokens[0].type ) && testContext( _dbContext.parentNode ) || context
 				)) ) {
 
 					// If seed is empty or no tokens remain, we can return early
@@ -2601,7 +2601,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		context,
 		!documentIsHTML,
 		results,
-		!context || rsibling.test( selector ) && testContext( context.parentNode ) || context
+		!context || rsibling.test( selector ) && testContext( _dbContext.parentNode ) || context
 	);
 	return results;
 };
@@ -2804,7 +2804,7 @@ jQuery.fn.extend( {
 
 			// If this is a positional/relative selector, check membership in the returned set
 			// so $("p:first").is("p:last") won't return true for a doc with two "p".
-			typeof selector === "string" && rneedsContext.test( selector ) ?
+			typeof selector === "string" && rneeds_dbContext.test( selector ) ?
 				jQuery( selector ) :
 				selector || [],
 			false
@@ -2860,7 +2860,7 @@ var rootjQuery,
 					// Intentionally let the error be thrown if parseHTML is not present
 					jQuery.merge( this, jQuery.parseHTML(
 						match[ 1 ],
-						context && context.nodeType ? context.ownerDocument || context : document,
+						context && _dbContext.nodeType ? _dbContext.ownerDocument || context : document,
 						true
 					) );
 
@@ -2900,7 +2900,7 @@ var rootjQuery,
 				}
 
 			// HANDLE: $(expr, $(...))
-			} else if ( !context || context.jquery ) {
+			} else if ( !context || _dbContext.jquery ) {
 				return ( context || root ).find( selector );
 
 			// HANDLE: $(expr, context)
@@ -2970,7 +2970,7 @@ jQuery.fn.extend( {
 			i = 0,
 			l = this.length,
 			matched = [],
-			pos = rneedsContext.test( selectors ) || typeof selectors !== "string" ?
+			pos = rneeds_dbContext.test( selectors ) || typeof selectors !== "string" ?
 				jQuery( selectors, context || this.context ) :
 				0;
 
@@ -4272,10 +4272,10 @@ function getAll( context, tag ) {
 
 	// Support: IE9-11+
 	// Use typeof to avoid zero-argument method invocation on host objects (#15151)
-	var ret = typeof context.getElementsByTagName !== "undefined" ?
-			context.getElementsByTagName( tag || "*" ) :
-			typeof context.querySelectorAll !== "undefined" ?
-				context.querySelectorAll( tag || "*" ) :
+	var ret = typeof _dbContext.getElementsByTagName !== "undefined" ?
+			_dbContext.getElementsByTagName( tag || "*" ) :
+			typeof _dbContext.querySelectorAll !== "undefined" ?
+				_dbContext.querySelectorAll( tag || "*" ) :
 			[];
 
 	return tag === undefined || tag && jQuery.nodeName( context, tag ) ?
@@ -4303,7 +4303,7 @@ var rhtml = /<|&#?\w+;/;
 
 function buildFragment( elems, context, scripts, selection, ignored ) {
 	var elem, tmp, tag, wrap, contains, j,
-		fragment = context.createDocumentFragment(),
+		fragment = _dbContext.createDocumentFragment(),
 		nodes = [],
 		i = 0,
 		l = elems.length;
@@ -4322,11 +4322,11 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 			// Convert non-html into a text node
 			} else if ( !rhtml.test( elem ) ) {
-				nodes.push( context.createTextNode( elem ) );
+				nodes.push( _dbContext.createTextNode( elem ) );
 
 			// Convert html into DOM nodes
 			} else {
-				tmp = tmp || fragment.appendChild( context.createElement( "div" ) );
+				tmp = tmp || fragment.appendChild( _dbContext.createElement( "div" ) );
 
 				// Deserialize a standard representation
 				tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
@@ -4575,7 +4575,7 @@ jQuery.event = {
 				handler: handler,
 				guid: handler.guid,
 				selector: selector,
-				needsContext: selector && jQuery.expr.match.needsContext.test( selector ),
+				needsContext: selector && jQuery.expr.match.needs_dbContext.test( selector ),
 				namespace: namespaces.join( "." )
 			}, handleObjIn );
 
@@ -8389,7 +8389,7 @@ jQuery.extend( {
 
 			// Context for global events is callbackContext if it is a DOM node or jQuery collection
 			globalEventContext = s.context &&
-				( callbackContext.nodeType || callbackContext.jquery ) ?
+				( callback_dbContext.nodeType || callback_dbContext.jquery ) ?
 					jQuery( callbackContext ) :
 					jQuery.event,
 
@@ -8633,7 +8633,7 @@ jQuery.extend( {
 
 			// Send global event
 			if ( fireGlobals ) {
-				globalEventContext.trigger( "ajaxSend", [ jqXHR, s ] );
+				globalEvent_dbContext.trigger( "ajaxSend", [ jqXHR, s ] );
 			}
 
 			// If request was aborted inside ajaxSend, stop there
@@ -8761,7 +8761,7 @@ jQuery.extend( {
 			statusCode = undefined;
 
 			if ( fireGlobals ) {
-				globalEventContext.trigger( isSuccess ? "ajaxSuccess" : "ajaxError",
+				globalEvent_dbContext.trigger( isSuccess ? "ajaxSuccess" : "ajaxError",
 					[ jqXHR, s, isSuccess ? success : error ] );
 			}
 
@@ -8769,7 +8769,7 @@ jQuery.extend( {
 			completeDeferred.fireWith( callbackContext, [ jqXHR, statusText ] );
 
 			if ( fireGlobals ) {
-				globalEventContext.trigger( "ajaxComplete", [ jqXHR, s ] );
+				globalEvent_dbContext.trigger( "ajaxComplete", [ jqXHR, s ] );
 
 				// Handle the global AJAX counter
 				if ( !( --jQuery.active ) ) {
@@ -9386,7 +9386,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 
 	// Single tag
 	if ( parsed ) {
-		return [ context.createElement( parsed[ 1 ] ) ];
+		return [ _dbContext.createElement( parsed[ 1 ] ) ];
 	}
 
 	parsed = buildFragment( [ data ], context, scripts );
